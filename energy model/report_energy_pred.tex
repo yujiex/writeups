@@ -149,28 +149,31 @@ In the previous stage of the work, the data source for temperature,
 the only environmental variable is retrieved from the pisystem, whose
 source is \href{https://www.wunderground.com/}{weather
   underground} web interface. 
-
-Other data sources:
+\subsubsection{\href{https://gis.ncdc.noaa.gov/geoportal/catalog/search/resource/details.page?id=gov.noaa.ncdc:C00532}{Integrated Surface Global Hourly Data from NOAA}}
 \begin{itemize}
-\item \href{https://gis.ncdc.noaa.gov/geoportal/catalog/search/resource/details.page?id=gov.noaa.ncdc:C00532}{Integrated Surface Global Hourly Data from NOAA}
+\item data sample
   \begin{figure}[h!]
     \centering
     \includegraphics[width=0.8\textwidth]{images/noaa_ish.png}
-    \caption{NOAA Integrated Surface Global Hourly Data}
+    \caption{\href{https://gis.ncdc.noaa.gov/geoportal/catalog/search/resource/details.page?id=gov.noaa.ncdc:C00532}{NOAA Integrated Surface Global Hourly Data}}
     \label{fig:noaa_ish}
   \end{figure}
-  download: \url{ftp://ftp.ncdc.noaa.gov/pub/data/noaa/} Data are
-  ordered by year and station, each data file contains weather station
-  identifier (USAF, and WBAN), timestamp, wind direction and speed,
-  sky cover condition (clear, overcast, scattered, etc.), temperature,
-  dew point, precipitation. This source lacks humidity and solar
-  radiation, but the sky cover condition might be useful as an
-  indirect indication of radiation.
-  
-% BOOKMARK
-
-\item LDAS
+  \FloatBarrier
+\item download: \url{ftp://ftp.ncdc.noaa.gov/pub/data/noaa/}
+\item Data are ordered by year and station, each data file contains
+  weather station identifier (USAF, and WBAN)
+\item relevant fields: wind direction and speed, sky cover condition
+  (clear, overcast, scattered, etc.), temperature, dew point,
+  precipitation. 
+\item time resolution: 1 to 2 observations per hour
+  % token: cbacihgEFiJKKIIKJeH
+% check for variables
+http://www7.ncdc.noaa.gov/rest/services/variables/ish/?output=csv&token=cbacihgEFiJKKIIKJeH
+% query temperature
+http://www7.ncdc.noaa.gov/rest/services/values/ish/72315003812/TMP/200101010000/200101022359/?output=csv&token=cbacihgEFiJKKIIKJeH
+example url: \url{https://www7.ncdc.noaa.gov/wsregistration/CDOServices.html}
 \end{itemize}
+\subsection{LDAS}
 \section{Non-linear models}
 \begin{itemize}
 \item Neuron Network with 1-2 hidden layer
