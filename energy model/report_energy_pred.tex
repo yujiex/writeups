@@ -45,12 +45,10 @@
 \maketitle
 \tableofcontents
 \newpage
-\section{Problem specification}
-\begin{itemize}
-\item using a set of features to predict hourly energy
-\item using a set of features to predict monthly energy we know the duration of the energy record
-\item using a set of features to predict hourly energy we do not know the duration of the energy record
-\end{itemize}
+\section{Hypothesis}
+Using more complicated non-linear models with rich feature set
+  could improve the prediction accuracy of 1) energy consumption and
+  2) the change point when heating or cooling system switches on.
 \section{Broad idea}
 From the discussing with Professor
 ~\href{http://www.cs.cmu.edu/~mgormley/}{Matt Gormley}, the broad
@@ -112,8 +110,14 @@ A list of variables that might be important are
   \item Detached vs apartment, categorical~\cite{Yu20101637}
   \item Construction material: wooden vs non-wooden~\cite{Yu20101637}
   \end{itemize}
+\item Building Mechanical System data
+  \begin{itemize}
+  \item BAS data
+  \item System type
+  \end{itemize}
 \item Time
   \begin{itemize}
+  \item swing season (spring vs fall)
   \item day type (every-day, weekday, weedend)~\cite{haberl1994bin}
   \item hour of day (~\cite{haberl1994bin, wytock2013contextually},
     ~\cite{granderson2014evaluation} mean-week and
@@ -143,7 +147,271 @@ A list of variables that might be important are
   \item pre-retrofit period~\cite{kissock2008methodology}
   \end{itemize}
 \end{itemize}
+\section{Features}
 \section{Data sources}
+\begin{table}[h!]
+\centering
+\label{tab:data_source}
+\begin{tabular}{l|l|l}
+  \hline
+variable                         & source & type          \\
+  \hline
+  \hline
+air temperature                  & NOAA ISD  & station based \\
+wind speed                       & NOAA ISD  & station based \\
+wind direction                   & NOAA ISD  & station based \\
+wind type (normal/calm/variable) & NOAA ISD  & station based \\
+visibility distance              & NOAA ISD  & station based \\
+dew point temperature            & NOAA ISD  & station based \\
+sea level pressure               & NOAA ISD  & station based \\
+global horizontal                & NSRDB  & grid based    \\
+direct normal                    & NSRDB  & grid based    \\
+diffuse horizontal irradiance    & NSRDB  & grid based    \\
+Solar Zenith Angle               & NSRDB  & grid based   \\
+  \hline
+\end{tabular}
+\caption{Environmental Variable Data Source}
+\end{table}
+\FloatBarrier
+\framebox{TODO: check NLDAS stage 2 forcing data so that all data are grid based}
+\subsection{Building metadata source}
+The buildings in the analysis are from the GSA portfolio.
+
+\subsubsection{Building list}
+\begin{longtable}{llll}
+\caption{List of buildings in the study}\\
+\label{tab:building_list}
+Building\_Number & Building\_Name                  & City           & State \\ \hline \hline \endhead
+MA0131ZZ         & JFK FEDERAL BUILDING            & BOSTON         & MA    \\
+NY0281ZZ         & JAMES M HANLEY FB               & SYRACUSE       & NY    \\
+NY0304ZZ         & KENNETH B KEATING FB            & ROCHESTER      & NY    \\
+NY0300ZZ         & LEO W OBRIEN FB                 & ALBANY         & NY    \\
+FL0067ZZ         & CHAS. E. BENNETT FB             & JACKSONVILLE   & FL    \\
+TN0088ZZ         & CLIFFORD DAVIS-ODELL HORTON     & MEMPHIS        & TN    \\
+MS0083ZZ         & DR. A. H. MC COY FB             & JACKSON        & MS    \\
+AL0076AB         & FEDERAL BUILDING                & MOBILE         & AL    \\
+GA0010AE         & IRS ANNEX                       & CHAMBLEE       & GA    \\
+NC0002AE         & VEACH-BALEY FEDERAL COMPLEX     & ASHEVILLE      & NC    \\
+AL0039AB         & JOHN A CAMPBELL USCT            & MOBILE         & AL    \\
+FL0010ZZ         & WILKIE D. FERGUSON, JR.         & MIAMI          & FL    \\
+GA1007ZZ         & SAM NUNN ATLANTA FED. CTR.      & ATLANTA        & GA    \\
+IN0048ZZ         & BIRCH BAYH FED BLDG \& US CTHSE & INDIANAPOLIS   & IN    \\
+IL0032ZZ         & CUSTOMHOUSE                     & CHICAGO        & IL    \\
+IL0205ZZ         & EVERETT M. DIRKSEN              & CHICAGO        & IL    \\
+IL0236FC         & JOHN C. KLUCZYNSKI FED. BLDG.   & CHICAGO        & IL    \\
+OH0194ZZ         & JOHN F SEIBERLING FB \& US CTHS & AKRON          & OH    \\
+OH0189CN         & JOHN WELD PECK                  & CINCINNATI     & OH    \\
+OH0046ZZ         & KINNEARY US CTHSE               & COLUMBUS       & OH    \\
+IN1703ZZ         & MAJOR GENERAL EMMETT J. BEAN    & INDIANAPOLIS   & IN    \\
+IL0303ZZ         & METCALFE BUILDING               & CHICAGO        & IL    \\
+OH0033ZZ         & METZENBAUM U.S. COURTHOUSE      & CLEVELAND      & OH    \\
+IN0133ZZ         & MINTON-CAPEHART F/B             & INDIANAPOLIS   & IN    \\
+OH0028CN         & POTTER STEWART U.S. COURTHOUSE  & CINCINNATI     & OH    \\
+MI0029ZZ         & THEODORE LEVIN US COURTHOUSE    & DETROIT        & MI    \\
+IL0235FC         & USPO LOOP STATION               & CHICAGO        & IL    \\
+MN0087ZZ         & W E BURGER FB \& US CTHS        & SAINT PAUL     & MN    \\
+KS0094ZZ         & ROBERT J. DOLE US CTHSE         & KANSAS CITY    & KS    \\
+IA0121ZZ         & CEDAR RAPIDS COURTHOUSE         & CEDAR RAPIDS   & IA    \\
+MO0050ZZ         & CHARLES EVANS WHITTAKER CTHS    & KANSAS CITY    & MO    \\
+NE0051ZZ         & EDWARD ZORINSKY FED BLDG        & OMAHA          & NE    \\
+NE0036ZZ         & HRUSKA US COURTHOUSE            & OMAHA          & NE    \\
+IA0112ZZ         & NEAL SMITH FEDERAL BUILDING     & DES MOINES     & IA    \\
+NE0531ZZ         & ROBERT DENNEY FB\&CT            & LINCOLN        & NE    \\
+MO0106ZZ         & ROBT A YOUNG FED BLD            & SAINT LOUIS    & MO    \\
+MO0095ZZ         & THOMAS F. EAGLETON COURTHOUSE   & SAINT LOUIS    & MO    \\
+TX0211ZZ         & B CASEY COURTHOUSE              & HOUSTON        & TX    \\
+NM0030ZZ         & D CHAVEZ FEDERAL BLDG           & ALBUQUERQUE    & NM    \\
+LA0085ZZ         & H BOGGS FED BLDG/COURTHOUSE     & NEW ORLEANS    & LA    \\
+AR0030RK         & LITTLE ROCK USPO/COURTHOUSE     & LITTLE ROCK    & AR    \\
+OK0046CT         & OKC POST OFFICE/COURTHOUSE      & OKLAHOMA CITY  & OK    \\
+OK0101ZZ         & OKLAHOMA CITY FEDERAL BUILDING  & OKLAHOMA CITY  & OK    \\
+NM0050ZZ         & PETE DOMENICI COURTHOUSE        & ALBUQUERQUE    & NM    \\
+TX0501HS         & SAN ANTONIO FEDERAL BLDG WEST   & SAN ANTONIO    & TX    \\
+TX0057ZZ         & TERMINAL ANNEX FEDERAL BLDG     & DALLAS         & TX    \\
+TX0302ZZ         & THE CENTRE PHASE 5              & FARMERS BRANCH & TX    \\
+CO0061ZZ         & ALFRED A. ARRAJ                 & DENVER         & CO    \\
+CO0009ZZ         & BYRON WHITE US CRTHS            & DENVER         & CO    \\
+ND0006ZZ         & FB-CT                           & FARGO          & ND    \\
+ND0046ZZ         & FB-PO                           & FARGO          & ND    \\
+UT0017ZZ         & FRANK E MOSS COURTHOUSE         & SALT LAKE CITY & UT    \\
+WY0029ZZ         & JOSEPH C O'MAHONEY FED CENTER   & CHEYENNE       & WY    \\
+UT0032ZZ         & WALLACE F BENNETT FB            & SALT LAKE CITY & UT    \\
+CA0167ZZ         & EDWARD J. SCHWARTZ FOB \& CTHS  & SAN DIEGO      & CA    \\
+CA0096DD         & JAMES R. BROWNING U.S. CRTHSE   & SAN FRANCISCO  & CA    \\
+NV0304ZZ         & LLOYD D. GEORGE COURTHOUSE      & LAS VEGAS      & NV    \\
+CA0154ZZ         & PHILLIP BURTON,FB CT            & SAN FRANCISCO  & CA    \\
+CA0306ZZ         & ROBERT T MATSUI US COURTHOUSE   & SACRAMENTO     & CA    \\
+AZ0303ZZ         & SANDRA D. O'CONNOR COURTHOUSE   & PHOENIX        & AZ    \\
+OR0033PE         & 911 FEDERAL BLDG                & PORTLAND       & OR    \\
+OR0052ZZ         & MARK O. HATFIELD U.S. CRTHSE    & PORTLAND       & OR    \\
+DC0021ZZ         & GSA                             & WASHINGTON     & DC    \\
+DC0083ZZ         & ORVILLE WRIGHT                  & WASHINGTON     & DC    \\
+DC0084ZZ         & WILBUR WRIGHT                   & WASHINGTON     & DC    \\
+MA0013ZZ         & JOHN W. MCCORMACK BUILDING      & BOSTON         & MA   \\
+\hline
+\end{longtable}
+\FloatBarrier
+
+\subsubsection{Basic information}
+\begin{longtable}{lllllll}
+\caption{Basic information of buildings in the study}\\
+\label{tab:basic_info}
+Building\_Number & Region & Year\_Built & Gross\_Square\_Feet & Owned & in\_facility & Type \\ \hline \hline \endhead
+MA0131ZZ         & 1      & 1966        & 1045836                    & 1     & 1            & Office                           \\
+NY0281ZZ         & 2      & 1979        & 391031                     & 1     & 1            & Courthouse                       \\
+NY0304ZZ         & 2      & 1974        & 256230                     & 1     & 1            & Courthouse                       \\
+NY0300ZZ         & 2      & 1975        & 256954                     & 1     & 1            & Office                           \\
+FL0067ZZ         & 4      & 1967        & 334195                     & 1     & 1            & Office                           \\
+TN0088ZZ         & 4      & 1963        & 444745                     & 1     & 1            & Office                           \\
+MS0083ZZ         & 4      & 1979        & 445829                     & 1     & 1            & Office                           \\
+AL0076AB         & 4      & 1974        & 212841                     & 1     &              &                                  \\
+GA0010AE         & 4      & 1999        & 417147                     & 1     &              & Office                           \\
+NC0002AE         & 4      & 1998        & 271793                     & 1     &              &                                  \\
+AL0039AB         & 4      & 1932        & 115014                     & 1     &              &                                  \\
+FL0010ZZ         & 4      & 2008        & 586108                     & 1     & 1            & Office                           \\
+GA1007ZZ         & 4      &             & 2407916                    &       & 1            & Office                           \\
+IN0048ZZ         & 5      & 1905        & 554238                     & 1     & 1            & Courthouse                       \\
+IL0032ZZ         & 5      & 1932        & 279320                     & 1     & 1            & Office                           \\
+IL0205ZZ         & 5      & 1964        & 1465043                    & 1     & 1            &                                  \\
+IL0236FC         & 5      & 1973        & 1428620                    & 1     &              &                                  \\
+OH0194ZZ         & 5      & 1974        & 425515                     & 1     & 1            & Courthouse                       \\
+OH0189CN         & 5      & 1964        & 791748                     & 1     &              &                                  \\
+OH0046ZZ         & 5      & 1935        & 282878                     & 1     & 1            & Courthouse                       \\
+IN1703ZZ         & 5      & 1953        & 1660353                    & 1     & 1            & Office                           \\
+IL0303ZZ         & 5      & 1991        & 839461                     & 1     & 1            & Office                           \\
+OH0033ZZ         & 5      & 1910        & 245368                     & 1     & 1            & Office                           \\
+IN0133ZZ         & 5      & 1974        & 636046                     & 1     & 1            & Office                           \\
+OH0028CN         & 5      & 1938        & 542823                     & 1     &              &                                  \\
+MI0029ZZ         & 5      & 1934        & 771904                     & 1     & 1            & Courthouse                       \\
+IL0235FC         & 5      & 1973        & 288104                     & 1     &              &                                  \\
+MN0087ZZ         & 5      & 1965        & 415309                     & 1     & 1            & Courthouse                       \\
+KS0094ZZ         & 6      & 1994        & 286446                     & 1     & 1            & Courthouse                       \\
+IA0121ZZ         & 6      & 1912        & 305999                     & 1     & 1            & Courthouse                       \\
+MO0050ZZ         & 6      & 1998        & 753500                     & 1     & 1            & Courthouse                       \\
+NE0051ZZ         & 6      & 1960        & 428932                     & 1     & 1            & Office                           \\
+NE0036ZZ         & 6      & 1900        & 364173                     & 1     & 1            & Courthouse                       \\
+IA0112ZZ         & 6      & 1967        & 405238                     & 1     & 1            & Office                           \\
+NE0531ZZ         & 6      & 1975        & 506318                     & 1     & 1            & Courthouse                       \\
+MO0106ZZ         & 6      & 1933        & 1131929                    & 1     & 1            & Office                           \\
+MO0095ZZ         & 6      & 1900        & 1310877                    & 1     & 1            & Courthouse                       \\
+TX0211ZZ         & 7      & 1962        & 538700                     & 1     & 1            & Office                           \\
+NM0030ZZ         & 7      & 1965        & 365232                     & 1     & 1            & Office                           \\
+LA0085ZZ         & 7      & 1976        & 709366                     & 1     & 1            & Office                           \\
+AR0030RK         & 7      & 1932        & 283694                     & 1     &              &                                  \\
+OK0046CT         & 7      & 1912        & 221497                     & 1     &              &                                  \\
+OK0101ZZ         & 7      & 1903        & 180756                     & 1     & 1            & Office                           \\
+NM0050ZZ         & 7      & 1998        & 375094                     & 1     & 1            & Office                           \\
+TX0501HS         & 7      & 1975        & 180230                     & 1     &              & Office                           \\
+TX0057ZZ         & 7      & 1930        & 254768                     & 1     & 1            & Office                           \\
+TX0302ZZ         & 7      & 1983        & 558200                     & 1     & 1            & Office                           \\
+CO0061ZZ         & 8      & 1902        & 326686                     & 1     & 1            & Office                           \\
+CO0009ZZ         & 8      & 1916        & 270106                     & 1     & 1            & Courthouse                       \\
+ND0006ZZ         & 8      & 1931        & 106032                     & 1     & 1            & Office                           \\
+ND0046ZZ         & 8      & 1969        & 271034                     & 1     & 1            & Office                           \\
+UT0017ZZ         & 8      & 1905        & 234288                     & 1     & 1            & Courthouse                       \\
+WY0029ZZ         & 8      & 1964        & 207835                     & 1     & 1            & Courthouse                       \\
+UT0032ZZ         & 8      & 1963        & 391726                     & 1     & 1            & Office                           \\
+CA0167ZZ         & 9      & 1976        & 895247                     & 1     & 1            & Courthouse                       \\
+CA0096DD         & 9      & 1905        & 457392                     & 1     &              &                                  \\
+NV0304ZZ         & 9      & 1900        & 454896                     & 1     & 1            & Courthouse                       \\
+CA0154ZZ         & 9      & 1964        & 1427966                    & 1     & 1            & Office                           \\
+CA0306ZZ         & 9      & 1999        & 773985                     & 1     & 1            & Office                           \\
+AZ0303ZZ         & 9      & 2000        & 831061                     & 1     & 1            & Courthouse                       \\
+OR0033PE         & 10     & 1953        & 312447                     & 1     &              & Office                           \\
+OR0052ZZ         & 10     & 1997        & 591688                     & 1     & 1            & Courthouse                       \\
+DC0021ZZ         & 11     & 1917        & 755935                     & 1     & 1            & Office                           \\
+DC0083ZZ         & 11     & 1963        & 1114225                    & 1     & 1            & Office                           \\
+DC0084ZZ         & 11     & 1964        & 421317                     & 1     & 1            & Office                           \\
+MA0013ZZ         & 1      & 1933        & 793165                     & 1     & 1            & Office                          \\
+\hline
+\end{longtable}
+\FloatBarrier
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{images/gsa_region.png}
+  \caption{GSA region map}
+  \label{fig:gsa_region}
+\end{figure}
+\FloatBarrier
+\url{https://www.gsa.gov/portal/category/22227}
+
+\subsubsection{Data Availability}
+\begin{longtable}{lll}
+\caption{Energy data availability for buildings in the study}\\
+\label{tab:energy_avail}
+Building\_Number & has\_electric & has\_gas \\ \hline \hline \endhead
+MA0131ZZ         & 1             &          \\
+NY0281ZZ         & 1             & 1        \\
+NY0304ZZ         & 1             &          \\
+NY0300ZZ         & 1             & 1        \\
+FL0067ZZ         & 1             & 1        \\
+TN0088ZZ         & 1             & 1        \\
+MS0083ZZ         & 1             &          \\
+AL0076AB         & 1             & 1        \\
+GA0010AE         & 1             & 1        \\
+NC0002AE         & 1             & 1        \\
+AL0039AB         & 1             & 1        \\
+FL0010ZZ         & 1             &          \\
+GA1007ZZ         & 1             & 1        \\
+IN0048ZZ         & 1             &          \\
+IL0032ZZ         & 1             & 1        \\
+IL0205ZZ         & 1             & 1        \\
+IL0236FC         & 1             &          \\
+OH0194ZZ         & 1             & 1        \\
+OH0189CN         & 1             &          \\
+OH0046ZZ         & 1             & 1        \\
+IN1703ZZ         & 1             & 1        \\
+IL0303ZZ         & 1             &          \\
+OH0033ZZ         & 1             & 1        \\
+IN0133ZZ         & 1             &          \\
+OH0028CN         & 1             & 1        \\
+MI0029ZZ         & 1             &          \\
+IL0235FC         & 1             &          \\
+MN0087ZZ         & 1             &          \\
+KS0094ZZ         & 1             &          \\
+IA0121ZZ         & 1             & 1        \\
+MO0050ZZ         & 1             &          \\
+NE0051ZZ         & 1             &          \\
+NE0036ZZ         & 1             &          \\
+IA0112ZZ         & 1             & 1        \\
+NE0531ZZ         & 1             & 1        \\
+MO0106ZZ         & 1             & 1        \\
+MO0095ZZ         & 1             &          \\
+TX0211ZZ         & 1             & 1        \\
+NM0030ZZ         & 1             & 1        \\
+LA0085ZZ         & 1             & 1        \\
+AR0030RK         & 1             & 1        \\
+OK0046CT         & 1             &          \\
+OK0101ZZ         & 1             &          \\
+NM0050ZZ         & 1             & 1        \\
+TX0501HS         & 1             &          \\
+TX0057ZZ         & 1             & 1        \\
+TX0302ZZ         & 1             &          \\
+CO0061ZZ         & 1             &          \\
+CO0009ZZ         & 1             &          \\
+ND0006ZZ         & 1             & 1        \\
+ND0046ZZ         & 1             & 1        \\
+UT0017ZZ         & 1             & 1        \\
+WY0029ZZ         & 1             & 1        \\
+UT0032ZZ         & 1             & 1        \\
+CA0167ZZ         & 1             &          \\
+CA0096DD         & 1             &          \\
+NV0304ZZ         & 1             &          \\
+CA0154ZZ         & 1             &          \\
+CA0306ZZ         & 1             &          \\
+AZ0303ZZ         & 1             &          \\
+OR0033PE         & 1             & 1        \\
+OR0052ZZ         & 1             & 1        \\
+DC0021ZZ         & 1             &          \\
+DC0083ZZ         & 1             &          \\
+DC0084ZZ         & 1             &          \\
+MA0013ZZ         &               & 1        \\
+\hline
+total            & 65            & 34       \\
+\hline
+\end{longtable}
+\FloatBarrier
 \subsection{Environment data sources}
 In the previous stage of the work, the data source for temperature,
 the only environmental variable is retrieved from the pisystem, whose
@@ -159,21 +427,102 @@ source is \href{https://www.wunderground.com/}{weather
     \label{fig:noaa_ish}
   \end{figure}
   \FloatBarrier
-\item download: \url{ftp://ftp.ncdc.noaa.gov/pub/data/noaa/}
+\item download: \url{ftp://ftp.ncdc.noaa.gov/pub/data/noaa/}, or using
+  \href{https://www7.ncdc.noaa.gov/rest/}{NCEI CDO 1.0 Rest API}
+example url: \url{https://www7.ncdc.noaa.gov/wsregistration/CDOServices.html}
+  % token: cbacihgEFiJKKIIKJeH
+\begin{verbatim}
+% check for variables
+https://www7.ncdc.noaa.gov/rest/services/variables/ish/?output=csv&token=cbacihgEFiJKKIIKJeH
+% query temperature
+https://www7.ncdc.noaa.gov/rest/services/values/ish/72315003812/TMP/200101010000/200101022359/?output=csv&token=cbacihgEFiJKKIIKJeH
+\end{verbatim}
 \item Data are ordered by year and station, each data file contains
-  weather station identifier (USAF, and WBAN)
+  weather station identifier (USAF, and WBAN), table can be downloaded
+  under \url{ftp://ftp.ncdc.noaa.gov/pub/data/noaa/}, file
+  ``isd-history.csv'' (2.8MB version, there are a lot of different
+  versions of the same file but different content)
 \item relevant fields: wind direction and speed, sky cover condition
   (clear, overcast, scattered, etc.), temperature, dew point,
-  precipitation. 
+  precipitation.
 \item time resolution: 1 to 2 observations per hour
-  % token: cbacihgEFiJKKIIKJeH
-% check for variables
-http://www7.ncdc.noaa.gov/rest/services/variables/ish/?output=csv&token=cbacihgEFiJKKIIKJeH
-% query temperature
-http://www7.ncdc.noaa.gov/rest/services/values/ish/72315003812/TMP/200101010000/200101022359/?output=csv&token=cbacihgEFiJKKIIKJeH
-example url: \url{https://www7.ncdc.noaa.gov/wsregistration/CDOServices.html}
+\item The list of weather stations to download:
+\begin{verbatim}
+  KNIP, KABQ, KOAK, KADS, KOKC, KAKR, KOLV, KALB, KOMA, KATL, KPDK,
+  KAVL, KPDX, KBFM, KPHX, KBKF, KROC, KBKL, KSAC, KBOS, KSAN, KCID,
+  KSFO, KCMH, KSLC, KCYS, KSSF, KDAL, KSTL, KDCA, KSTP, KDET, KSYR,
+  KDSM, KVGT, KEYE, KFAR, KHKS, KHOU, KLIT, KLNK, KLUK, KMDW, KMIA,
+  KMKC, KNEW
+\end{verbatim}
 \end{itemize}
-\subsection{LDAS}
+downloaded 2013 to 2016 data
+\subsubsection{\href{http://rredc.nrel.gov/solar/old_data/nsrdb/}{National Solar Radiation Data Base (NSRDB)}}
+``The NSRDB is a serially complete collection of hourly and
+half-hourly values of the three most common measurements of solar
+radiation—global horizontal, direct normal, and diffuse horizontal
+irradiance—and meteorological
+data''~\url{https://nsrdb.nrel.gov/background}. The old versions are
+station based, the new version is grid based ($4m \times 4m$ or 0.038
+degrees)
+
+Downloaded global horizontal (ghi), direct normal (dni), and diffuse
+horizontal irradiance (dni). Other meteorological data include wind
+speed, temperature, Solar Zenith Angle are also available (\url{https://nsrdb.nrel.gov/current-version}).
+\begin{table}[h!]
+\centering
+\caption{Data Fields in NSRDB}
+\label{fig:nsrdb_var}
+\begin{tabular}{p{3cm}p{1cm}p{2cm}lp{7cm}}
+  \hline
+var                & type & unit                  & source & note                                                                                                                                     \\
+  \hline
+  \hline
+Clearsky DHI       & Q    & W/m2 & NSRDB  & - Modeled solar radiation on a horizontal surface received from the sky excluding the solar disk. - This is assuming clear sky condition \\
+Clearsky DNI       & Q    & W/m2 & NSRDB  & - Modeled solar radiation obtained from the direction of the sun. - This is assuming clear sky condition                                 \\
+Clearsky GHI       & Q    & W/m2 & NSRDB  & - Modeled solar radiation on a horizontal surface received from the sky. - This is assuming clear sky condition                          \\
+Cloud Type         & C    & Unitless              & NSRDB  & Obtained from PATMOS-X                                                                                                                   \\
+Dew Point          & Q    & Degree C              & NSRDB  & Calculated from specific humidity                                                                                                        \\
+DHI                & Q    & W/m2 & NSRDB  & Modeled solar radiation on a horizontal surface received from the sky excluding the solar disk.                                          \\
+DNI                & Q    & W/m2 & NSRDB  & Modeled solar radiation obtained from the direction of the sun.                                                                          \\
+GHI                & Q    & W/m2 & NSRDB  & Modeled solar radiation on a horizontal surface received from the sky.                                                                   \\
+Snow Depth         & Q    & Meters                & NSRDB  & Source: MERRA                                                                                                                            \\
+Solar Zenith Angle & Q    & Degrees               & NSRDB  & Angle between the sun and the zenith                                                                                                     \\
+Temperature        & Q    & Degree C              & NSRDB  & Source: MERRA                                                                                                                            \\
+Pressure           & Q    & Millibar              & NSRDB  & Source: MERRA                                                                                                                            \\
+Relative Humidity  & Q    & Percent               & NSRDB  & Calculated from specific humidity                                                                                                        \\
+Precipitable Water & Q    & Millimeter            & NSRDB  & Source: MERRA                                                                                                                            \\
+Wind Direction     & Q    & Degrees               & NSRDB  & Source: MERRA                                                                                                                            \\
+Wind Speed         & Q    & Meter per second      & NSRDB  & Source: MERRA                                                                                                                           \\
+                                                             \hline
+\end{tabular}
+\end{table}
+\FloatBarrier
+\subsubsection{NLDAS}
+``The goal of the North American Land Data Assimilation System (NLDAS)
+is to construct quality-controlled, and spatially and temporally
+consistent, land-surface model (LSM) datasets from the best available
+observations and model output to support modeling
+activities.''~\url{https://ldas.gsfc.nasa.gov/nldas/} It has
+1/8th-degree grid resolution and dates back to 1979.
+
+introduction ppt about the dataset: \url{https://ldas.gsfc.nasa.gov/nldas/presentations/Cosgrove_GAPP_May2002.pdf}
+
+Download and data specs: \url{https://disc.sci.gsfc.nasa.gov/uui/datasets?keywords=NLDAS}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.6\textwidth]{NLDAS_FORB0125_H_002.png}
+  \caption{NLDAS data download}
+  \label{fig:nldas}
+\end{figure}
+download page: \url{https://disc.sci.gsfc.nasa.gov/uui/datasets/NLDAS_FORB0125_H_V002/summary?keywords=NLDAS}
+\subsection{Building Mechanical System}
+BAS data from sky spark.
+
+To be downloaded...
+\subsection{Energy data}
+Interval meter data from ION.
+
+Might need to download more buildings
 \section{Non-linear models}
 \begin{itemize}
 \item Neuron Network with 1-2 hidden layer
@@ -181,6 +530,355 @@ example url: \url{https://www7.ncdc.noaa.gov/wsregistration/CDOServices.html}
 \item Random forest regression~\cite{randomForestWiki2016}
 \item piecewise linear regression as baseline (it's a simple non-linear model, but not expressive enough)
 \end{itemize}
+\section{Appendix}
+\subsection{Building ECM actions}
+\begin{longtable}{lp{4cm}p{4cm}p{3cm}}
+\caption{ECM actions for buildings in the study}\\
+\label{tab:energy_avail}
+Building\_Number & high\_level\_ECM                        & detail\_level\_ECM                        & Completion\_Date \\ \hline \hline \endhead
+CA0154ZZ         & HVAC                                    & New\_Cooling Tower                        & 2012-Feb-29                   \\
+CA0154ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2012-Feb-29                   \\
+CA0154ZZ         & HVAC                                    & Repairs\_Chillers                         & 2012-Feb-29                   \\
+CA0154ZZ         & HVAC                                    & Repairs\_Controls                         & 2012-Feb-29                   \\
+CA0154ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-Feb-29                   \\
+CA0154ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Feb-29                   \\
+CA0154ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Feb-29                   \\
+CA0154ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-Feb-29                   \\
+CA0167ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Mar-06                   \\
+CA0167ZZ         & HVAC                                    & New\_Chillers                             & 2012-Mar-06                   \\
+CA0167ZZ         & HVAC                                    & New\_Controls                             & 2012-Mar-06                   \\
+CA0167ZZ         & HVAC                                    & New\_Cooling Tower                        & 2012-Mar-06                   \\
+CA0167ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2012-Mar-06                   \\
+CA0167ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Mar-06                   \\
+CA0306ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Sep-26                   \\
+CA0306ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Sep-26                   \\
+CA0306ZZ         & HVAC                                    & New\_Air Handler                          & 2012-Sep-26                   \\
+CA0306ZZ         & HVAC                                    & New\_Boilers                              & 2012-Sep-26                   \\
+CA0306ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2012-Sep-26                   \\
+CA0306ZZ         & HVAC                                    & Repairs\_Chillers                         & 2012-Sep-26                   \\
+CA0306ZZ         & HVAC                                    & Repairs\_Controls                         & 2012-Sep-26                   \\
+CA0306ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2012-Sep-26                   \\
+CA0306ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-Sep-26                   \\
+CA0306ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Sep-26                   \\
+CA0306ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Sep-26                   \\
+CA0306ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-Sep-26                   \\
+CO0009ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Jun-21                   \\
+CO0009ZZ         & Advanced Metering                       & Submetering                               & 2011-Jun-21                   \\
+CO0009ZZ         & Building Envelope                       & Repairs\_Windows                          & 2011-Jun-21                   \\
+CO0009ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Jun-21                   \\
+CO0009ZZ         & HVAC                                    & New\_Boilers                              & 2011-Jun-21                   \\
+CO0009ZZ         & HVAC                                    & New\_Cooling Tower                        & 2011-Jun-21                   \\
+CO0009ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-Jun-21                   \\
+CO0009ZZ         & HVAC                                    & Repairs\_Chillers                         & 2011-Jun-21                   \\
+CO0009ZZ         & HVAC                                    & Repairs\_Controls                         & 2011-Jun-21                   \\
+CO0009ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-Jun-21                   \\
+CO0009ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-Jun-21                   \\
+CO0009ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Jun-21                   \\
+DC0021ZZ         & Advanced Metering                       & Building / Facility                       & 2014-Jan-27                   \\
+DC0021ZZ         & Advanced Metering                       & Submetering                               & 2014-Jan-27                   \\
+DC0021ZZ         & Building Envelope                       & New\_Facade                               & 2014-Jan-27                   \\
+DC0021ZZ         & Building Envelope                       & New\_Roof                                 & 2014-Jan-27                   \\
+DC0021ZZ         & Building Envelope                       & New\_Windows                              & 2014-Jan-27                   \\
+DC0021ZZ         & Building Envelope                       & Repairs\_Facade                           & 2014-Jan-27                   \\
+DC0021ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2014-Jan-27                   \\
+DC0021ZZ         & HVAC                                    & New\_Air Handler                          & 2014-Jan-27                   \\
+DC0021ZZ         & HVAC                                    & New\_Chillers                             & 2014-Jan-27                   \\
+DC0021ZZ         & HVAC                                    & New\_Controls                             & 2014-Jan-27                   \\
+DC0021ZZ         & HVAC                                    & New\_Cooling Tower                        & 2014-Jan-27                   \\
+DC0021ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2014-Jan-27                   \\
+DC0021ZZ         & Lighting                                & Indoor Daylighting or Lighting Strategies & 2014-Jan-27                   \\
+DC0021ZZ         & Lighting                                & Indoor\_Daylighting                       & 2014-Jan-27                   \\
+DC0021ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2014-Jan-27                   \\
+DC0021ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2014-Jan-27                   \\
+DC0021ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2014-Jan-27                   \\
+FL0010ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Jun-17                   \\
+FL0010ZZ         & Building Envelope                       & New\_Roof                                 & 2011-Jun-17                   \\
+FL0010ZZ         & Lighting                                &                                           & 2011-Jun-17                   \\
+FL0067ZZ         & Advanced Metering                       & Building / Facility                       & 2013-Nov-19                   \\
+GA0010AE         & Advanced Metering                       & Building / Facility                       & 2012-Dec-04                   \\
+GA0010AE         & Building Envelope                       & Repairs\_Windows                          & 2012-Dec-04                   \\
+GA0010AE         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Dec-04                   \\
+GA0010AE         & Lighting                                & Indoor Daylighting or Lighting Strategies & 2012-Dec-04                   \\
+GA0010AE         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Dec-04                   \\
+GA0010AE         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Dec-04                   \\
+GA0010AE         & Lighting                                & Outdoor\_Lighting Controls                & 2012-Dec-04                   \\
+GA0010AE         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-Dec-04                   \\
+GA1007ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Mar-30                   \\
+GA1007ZZ         & Building Envelope                       & New\_Roof                                 & 2011-Mar-30                   \\
+GA1007ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Mar-30                   \\
+GA1007ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-Mar-30                   \\
+GA1007ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Mar-30                   \\
+GA1007ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2011-Mar-30                   \\
+IA0112ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Oct-24                   \\
+IA0112ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Oct-24                   \\
+IA0112ZZ         & HVAC                                    & New\_Air Handler                          & 2011-Oct-24                   \\
+IA0112ZZ         & HVAC                                    & New\_Cooling Tower                        & 2011-Oct-24                   \\
+IA0112ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-Oct-24                   \\
+IA0112ZZ         & HVAC                                    & Repairs\_Boilers                          & 2011-Oct-24                   \\
+IA0112ZZ         & HVAC                                    & Repairs\_Chillers                         & 2011-Oct-24                   \\
+IA0112ZZ         & HVAC                                    & Repairs\_Controls                         & 2011-Oct-24                   \\
+IA0112ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-Oct-24                   \\
+IA0112ZZ         & Lighting                                & Indoor\_Daylighting                       & 2011-Oct-24                   \\
+IA0112ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-Oct-24                   \\
+IA0112ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Oct-24                   \\
+IA0112ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2011-Oct-24                   \\
+IL0032ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Sep-06                   \\
+IL0032ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Sep-06                   \\
+IL0032ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-Sep-06                   \\
+IL0032ZZ         & HVAC                                    & Repairs\_Boilers                          & 2011-Sep-06                   \\
+IL0032ZZ         & HVAC                                    & Repairs\_Controls                         & 2011-Sep-06                   \\
+IL0032ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Sep-06                   \\
+IL0303ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Sep-27                   \\
+IL0303ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Sep-27                   \\
+IL0303ZZ         & HVAC                                    & New\_Controls                             & 2011-Sep-27                   \\
+IL0303ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-Sep-27                   \\
+IL0303ZZ         & Lighting                                & Indoor\_Daylighting                       & 2011-Sep-27                   \\
+IL0303ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-Sep-27                   \\
+IL0303ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Sep-27                   \\
+IL0303ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2011-Sep-27                   \\
+IN0048ZZ         & Building Envelope                       & New\_Roof                                 & 2013-Mar-15                   \\
+IN0048ZZ         & Building Envelope                       & New\_Windows                              & 2013-Mar-15                   \\
+IN0048ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2013-Mar-15                   \\
+IN0048ZZ         & HVAC                                    & New\_Air Handler                          & 2013-Mar-15                   \\
+IN0048ZZ         & HVAC                                    & New\_Controls                             & 2013-Mar-15                   \\
+IN0048ZZ         & HVAC                                    & New\_Cooling Tower                        & 2013-Mar-15                   \\
+IN0048ZZ         & HVAC                                    & Repairs\_Chillers                         & 2013-Mar-15                   \\
+IN0048ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2013-Mar-15                   \\
+IN0048ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2013-Mar-15                   \\
+IN0048ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2013-Mar-15                   \\
+IN0048ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2013-Mar-15                   \\
+IN0133ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Oct-29                   \\
+IN0133ZZ         & HVAC                                    & New\_Air Handler                          & 2012-Oct-29                   \\
+IN0133ZZ         & HVAC                                    & New\_Chillers                             & 2012-Oct-29                   \\
+IN0133ZZ         & HVAC                                    & New\_Controls                             & 2012-Oct-29                   \\
+IN0133ZZ         & HVAC                                    & New\_Cooling Tower                        & 2012-Oct-29                   \\
+IN0133ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2012-Oct-29                   \\
+IN0133ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Oct-29                   \\
+IN0133ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Oct-29                   \\
+IN0133ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2012-Oct-29                   \\
+IN0133ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-Oct-29                   \\
+IN1703ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Aug-24                   \\
+IN1703ZZ         & Advanced Metering                       & Submetering                               & 2011-Aug-24                   \\
+IN1703ZZ         & Building Envelope                       & New\_Roof                                 & 2011-Aug-24                   \\
+IN1703ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Aug-24                   \\
+IN1703ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Aug-24                   \\
+IN1703ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2011-Aug-24                   \\
+IN1703ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2011-Aug-24                   \\
+KS0094ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Sep-20                   \\
+KS0094ZZ         & Building Envelope                       & New\_Roof                                 & 2011-Sep-20                   \\
+KS0094ZZ         & Building Envelope                       & Repairs\_Facade                           & 2011-Sep-20                   \\
+KS0094ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Sep-20                   \\
+KS0094ZZ         & HVAC                                    & New\_Chillers                             & 2011-Sep-20                   \\
+KS0094ZZ         & HVAC                                    & New\_Controls                             & 2011-Sep-20                   \\
+KS0094ZZ         & HVAC                                    & New\_Cooling Tower                        & 2011-Sep-20                   \\
+KS0094ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-Sep-20                   \\
+KS0094ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-Sep-20                   \\
+KS0094ZZ         & Lighting                                & Indoor\_Daylighting                       & 2011-Sep-20                   \\
+KS0094ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-Sep-20                   \\
+KS0094ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Sep-20                   \\
+KS0094ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2011-Sep-20                   \\
+KS0094ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2011-Sep-20                   \\
+LA0085ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Aug-24                   \\
+LA0085ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Aug-24                   \\
+LA0085ZZ         & HVAC                                    & Repairs\_Chillers                         & 2012-Aug-24                   \\
+LA0085ZZ         & HVAC                                    & Repairs\_Controls                         & 2012-Aug-24                   \\
+LA0085ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2012-Aug-24                   \\
+LA0085ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-Aug-24                   \\
+LA0085ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Aug-24                   \\
+LA0085ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Aug-24                   \\
+LA0085ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-Aug-24                   \\
+MA0013ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Feb-23                   \\
+MA0013ZZ         & Building Envelope                       & New\_Roof                                 & 2011-Feb-23                   \\
+MA0013ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Feb-23                   \\
+MA0131ZZ         & Building Envelope                       & Repairs\_Windows                          & 2013-Jul-25                   \\
+MI0029ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Jun-23                   \\
+MI0029ZZ         & Advanced Metering                       & Submetering                               & 2011-Jun-23                   \\
+MI0029ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Jun-23                   \\
+MI0029ZZ         & HVAC                                    & New\_Air Handler                          & 2011-Jun-23                   \\
+MI0029ZZ         & HVAC                                    & New\_Chillers                             & 2011-Jun-23                   \\
+MI0029ZZ         & HVAC                                    & New\_Controls                             & 2011-Jun-23                   \\
+MI0029ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-Jun-23                   \\
+MI0029ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-Jun-23                   \\
+MN0087ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Dec-06                   \\
+MO0050ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Aug-22                   \\
+MO0050ZZ         & HVAC                                    & Repairs\_Controls                         & 2011-Aug-22                   \\
+MO0095ZZ         & Advanced Metering                       & Building / Facility                       & 2010-Nov-30                   \\
+MO0095ZZ         & Building Envelope                       & Repairs\_Facade                           & 2010-Nov-30                   \\
+MO0095ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2010-Nov-30                   \\
+MO0095ZZ         & HVAC                                    & New\_Controls                             & 2010-Nov-30                   \\
+MO0095ZZ         & HVAC                                    & New\_Cooling Tower                        & 2010-Nov-30                   \\
+MO0095ZZ         & HVAC                                    & Repairs\_Chillers                         & 2010-Nov-30                   \\
+MO0095ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2010-Nov-30                   \\
+MO0095ZZ         & Lighting                                & Indoor\_Daylighting                       & 2010-Nov-30                   \\
+MO0095ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2010-Nov-30                   \\
+MO0095ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2010-Nov-30                   \\
+MO0106ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Mar-19                   \\
+MO0106ZZ         & Advanced Metering                       & Submetering                               & 2012-Mar-19                   \\
+MO0106ZZ         & Building Envelope                       & New\_Windows                              & 2012-Mar-19                   \\
+MO0106ZZ         & Building Envelope                       & Repairs\_Facade                           & 2012-Mar-19                   \\
+MO0106ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Mar-19                   \\
+MO0106ZZ         & HVAC                                    & New\_Controls                             & 2012-Mar-19                   \\
+MO0106ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2012-Mar-19                   \\
+MO0106ZZ         & HVAC                                    & Repairs\_Chillers                         & 2012-Mar-19                   \\
+MO0106ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-Mar-19                   \\
+MO0106ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Mar-19                   \\
+MO0106ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Mar-19                   \\
+MO0106ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-Mar-19                   \\
+MS0083ZZ         & Advanced Metering                       & Building / Facility                       & 2014-Jun-13                   \\
+MS0083ZZ         & Building Envelope                       & New\_Facade                               & 2014-Jun-13                   \\
+MS0083ZZ         & Building Envelope                       & New\_Roof                                 & 2014-Jun-13                   \\
+MS0083ZZ         & Building Envelope                       & New\_Windows                              & 2014-Jun-13                   \\
+MS0083ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2014-Jun-13                   \\
+MS0083ZZ         & HVAC                                    & New\_Air Handler                          & 2014-Jun-13                   \\
+MS0083ZZ         & HVAC                                    & New\_Boilers                              & 2014-Jun-13                   \\
+MS0083ZZ         & HVAC                                    & New\_Chillers                             & 2014-Jun-13                   \\
+MS0083ZZ         & HVAC                                    & New\_Controls                             & 2014-Jun-13                   \\
+MS0083ZZ         & HVAC                                    & New\_Cooling Tower                        & 2014-Jun-13                   \\
+MS0083ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2014-Jun-13                   \\
+MS0083ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2014-Jun-13                   \\
+MS0083ZZ         & Lighting                                & Indoor Daylighting or Lighting Strategies & 2014-Jun-13                   \\
+MS0083ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2014-Jun-13                   \\
+MS0083ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2014-Jun-13                   \\
+MS0083ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2014-Jun-13                   \\
+MS0083ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2014-Jun-13                   \\
+ND0006ZZ         & Building Envelope                       & Repairs\_Facade                           & 2011-May-02                   \\
+ND0006ZZ         & Building Envelope                       & Repairs\_Windows                          & 2011-May-02                   \\
+ND0006ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-May-02                   \\
+ND0006ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-May-02                   \\
+ND0006ZZ         & HVAC                                    & Repairs\_Boilers                          & 2011-May-02                   \\
+ND0006ZZ         & HVAC                                    & Repairs\_Controls                         & 2011-May-02                   \\
+ND0006ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-May-02                   \\
+ND0006ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-May-02                   \\
+ND0006ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-May-02                   \\
+ND0006ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2011-May-02                   \\
+ND0046ZZ         & Building Envelope                       & Repairs\_Facade                           & 2011-Aug-24                   \\
+ND0046ZZ         & HVAC                                    & New\_Boilers                              & 2011-Aug-24                   \\
+ND0046ZZ         & HVAC                                    & New\_Chillers                             & 2011-Aug-24                   \\
+ND0046ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-Aug-24                   \\
+ND0046ZZ         & HVAC                                    & Repairs\_Chillers                         & 2011-Aug-24                   \\
+ND0046ZZ         & HVAC                                    & Repairs\_Controls                         & 2011-Aug-24                   \\
+ND0046ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-Aug-24                   \\
+ND0046ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-Aug-24                   \\
+ND0046ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Aug-24                   \\
+NE0036ZZ         & Building Envelope                       & New\_Roof                                 & 2011-Feb-23                   \\
+NE0036ZZ         & Building Envelope                       & Repairs\_Roof                             & 2011-Feb-23                   \\
+NE0036ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Feb-23                   \\
+NE0036ZZ         & HVAC                                    & New\_Controls                             & 2011-Feb-23                   \\
+NE0531ZZ         & Advanced Metering                       & Building / Facility                       & 2011-May-16                   \\
+NE0531ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-May-16                   \\
+NE0531ZZ         & HVAC                                    & New\_Controls                             & 2011-May-16                   \\
+NE0531ZZ         & HVAC                                    & New\_Cooling Tower                        & 2011-May-16                   \\
+NE0531ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-May-16                   \\
+NE0531ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-May-16                   \\
+NM0050ZZ         & Advanced Metering                       & Building / Facility                       & 2013-Aug-12                   \\
+NM0050ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2013-Aug-12                   \\
+NM0050ZZ         & HVAC                                    & Repairs\_Controls                         & 2013-Aug-12                   \\
+NM0050ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2013-Aug-12                   \\
+NV0304ZZ         & Advanced Metering                       & Building / Facility                       & 2012-May-18                   \\
+NV0304ZZ         & Advanced Metering                       & Submetering                               & 2012-May-18                   \\
+NV0304ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-May-18                   \\
+NV0304ZZ         & HVAC                                    & New\_Controls                             & 2012-May-18                   \\
+NV0304ZZ         & HVAC                                    & New\_Cooling Tower                        & 2012-May-18                   \\
+NV0304ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2012-May-18                   \\
+NV0304ZZ         & HVAC                                    & Repairs\_Chillers                         & 2012-May-18                   \\
+NV0304ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2012-May-18                   \\
+NV0304ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-May-18                   \\
+NV0304ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-May-18                   \\
+NV0304ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-May-18                   \\
+NV0304ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2012-May-18                   \\
+NV0304ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-May-18                   \\
+NY0281ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Aug-15                   \\
+NY0281ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Aug-15                   \\
+NY0281ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2012-Aug-15                   \\
+NY0281ZZ         & Lighting                                &                                           & 2012-Aug-15                   \\
+NY0300ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Sep-27                   \\
+NY0300ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Sep-27                   \\
+NY0304ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Sep-27                   \\
+NY0304ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Sep-27                   \\
+NY0304ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2012-Sep-27                   \\
+NY0304ZZ         & HVAC                                    & Repairs\_Controls                         & 2012-Sep-27                   \\
+NY0304ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2012-Sep-27                   \\
+NY0304ZZ         & Lighting                                &                                           & 2012-Sep-27                   \\
+OH0033ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Jan-12                   \\
+OH0033ZZ         & Advanced Metering                       & Submetering                               & 2012-Jan-12                   \\
+OH0033ZZ         & HVAC                                    & New\_Air Handler                          & 2012-Jan-12                   \\
+OH0033ZZ         & HVAC                                    & Repairs\_Controls                         & 2012-Jan-12                   \\
+OH0033ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-Jan-12                   \\
+OH0033ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Jan-12                   \\
+OH0033ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Jan-12                   \\
+OH0046ZZ         & Advanced Metering                       & Building / Facility                       & 2013-Dec-26                   \\
+OH0046ZZ         & Building Envelope                       & Repairs\_Facade                           & 2013-Dec-26                   \\
+OH0046ZZ         & Building Envelope                       & Repairs\_Windows                          & 2013-Dec-26                   \\
+OH0046ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2013-Dec-26                   \\
+OH0046ZZ         & HVAC                                    & New\_Air Handler                          & 2013-Dec-26                   \\
+OH0046ZZ         & HVAC                                    & New\_Boilers                              & 2013-Dec-26                   \\
+OH0046ZZ         & HVAC                                    & New\_Controls                             & 2013-Dec-26                   \\
+OH0046ZZ         & HVAC                                    & New\_Cooling Tower                        & 2013-Dec-26                   \\
+OH0046ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2013-Dec-26                   \\
+OH0046ZZ         & HVAC                                    & Repairs\_Boilers                          & 2013-Dec-26                   \\
+OH0046ZZ         & HVAC                                    & Repairs\_Chillers                         & 2013-Dec-26                   \\
+OH0046ZZ         & Lighting                                & Indoor\_Daylighting                       & 2013-Dec-26                   \\
+OH0046ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2013-Dec-26                   \\
+OH0046ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2013-Dec-26                   \\
+OH0046ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2013-Dec-26                   \\
+OH0194ZZ         & Advanced Metering                       & Building / Facility                       & 2012-May-16                   \\
+OH0194ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-May-16                   \\
+OH0194ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-May-16                   \\
+OH0194ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-May-16                   \\
+OH0194ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-May-16                   \\
+OK0101ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2010-Dec-30                   \\
+OR0033PE         & Advanced Metering                       & Building / Facility                       & 2011-Jul-28                   \\
+OR0033PE         & Advanced Metering                       & Submetering                               & 2011-Jul-28                   \\
+OR0033PE         & Building Envelope                       & New\_Roof                                 & 2011-Jul-28                   \\
+OR0033PE         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Jul-28                   \\
+OR0033PE         & HVAC                                    & New\_Air Handler                          & 2011-Jul-28                   \\
+OR0033PE         & HVAC                                    & New\_Boilers                              & 2011-Jul-28                   \\
+OR0033PE         & HVAC                                    & New\_Chillers                             & 2011-Jul-28                   \\
+OR0033PE         & HVAC                                    & New\_Controls                             & 2011-Jul-28                   \\
+OR0033PE         & HVAC                                    & New\_Cooling Tower                        & 2011-Jul-28                   \\
+OR0033PE         & HVAC                                    & Repairs\_Air Handler                      & 2011-Jul-28                   \\
+OR0033PE         & HVAC                                    & Repairs\_Boilers                          & 2011-Jul-28                   \\
+OR0033PE         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-Jul-28                   \\
+OR0033PE         & Lighting                                &                                           & 2011-Jul-28                   \\
+OR0052ZZ         & Advanced Metering                       & Submetering                               & 2011-Jun-30                   \\
+OR0052ZZ         & HVAC                                    & New\_Controls                             & 2011-Jun-30                   \\
+TN0088ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Apr-30                   \\
+TN0088ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2012-Apr-30                   \\
+TN0088ZZ         & HVAC                                    & Repairs\_Controls                         & 2012-Apr-30                   \\
+TN0088ZZ         & Lighting                                & Indoor Daylighting or Lighting Strategies & 2012-Apr-30                   \\
+TN0088ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-Apr-30                   \\
+TN0088ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Apr-30                   \\
+TN0088ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Apr-30                   \\
+TN0088ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-Apr-30                   \\
+TX0211ZZ         & Advanced Metering                       & Building / Facility                       & 2012-Sep-25                   \\
+TX0211ZZ         & Building Envelope                       & New\_Roof                                 & 2012-Sep-25                   \\
+TX0211ZZ         & HVAC                                    & Repairs\_Controls                         & 2012-Sep-25                   \\
+TX0211ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2012-Sep-25                   \\
+TX0211ZZ         & Lighting                                & Indoor\_Daylighting                       & 2012-Sep-25                   \\
+TX0211ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2012-Sep-25                   \\
+TX0211ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Sep-25                   \\
+TX0211ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2012-Sep-25                   \\
+TX0302ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2011-Jun-23                   \\
+TX0302ZZ         & HVAC                                    & New\_Controls                             & 2011-Jun-23                   \\
+TX0302ZZ         & HVAC                                    & Repairs\_Chillers                         & 2011-Jun-23                   \\
+TX0302ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2011-Jun-23                   \\
+TX0302ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-Jun-23                   \\
+TX0302ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2011-Jun-23                   \\
+TX0501HS         & Building Envelope                       & Repairs\_Facade                           & 2012-Mar-27                   \\
+TX0501HS         & Building Envelope                       & Repairs\_Windows                          & 2012-Mar-27                   \\
+TX0501HS         & HVAC                                    & New\_Air Handler                          & 2012-Mar-27                   \\
+TX0501HS         & HVAC                                    & Repairs\_Controls                         & 2012-Mar-27                   \\
+TX0501HS         & HVAC                                    & Repairs\_Cooling Tower                    & 2012-Mar-27                   \\
+TX0501HS         & Lighting                                & Indoor\_Retrofit or Replacement           & 2012-Mar-27                   \\
+UT0032ZZ         & HVAC                                    & New\_Controls                             & 2010-Nov-29                   \\
+WY0029ZZ         & Advanced Metering                       & Building / Facility                       & 2011-Jun-15                   \\
+WY0029ZZ         & HVAC                                    & New\_Controls                             & 2011-Jun-15                   \\
+WY0029ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2011-Jun-15                   \\
+WY0029ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2011-Jun-15                   \\
+WY0029ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2011-Jun-15                   \\
+WY0029ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2011-Jun-15                  
+\end{longtable}
+\FloatBarrier
 \newpage
 \bibliographystyle{plain}
 \bibliography{myCitation}
