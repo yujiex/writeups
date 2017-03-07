@@ -148,116 +148,181 @@ A list of variables that might be important are
   \end{itemize}
 \end{itemize}
 \section{Features}
-\section{Data sources}
-\begin{table}[h!]
-\centering
-\label{tab:data_source}
-\begin{tabular}{l|l|l}
-  \hline
-variable                         & source & type          \\
-  \hline
-  \hline
-air temperature                  & NOAA ISD  & station based \\
-wind speed                       & NOAA ISD  & station based \\
-wind direction                   & NOAA ISD  & station based \\
-wind type (normal/calm/variable) & NOAA ISD  & station based \\
-visibility distance              & NOAA ISD  & station based \\
-dew point temperature            & NOAA ISD  & station based \\
-sea level pressure               & NOAA ISD  & station based \\
-global horizontal                & NSRDB  & grid based    \\
-direct normal                    & NSRDB  & grid based    \\
-diffuse horizontal irradiance    & NSRDB  & grid based    \\
-Solar Zenith Angle               & NSRDB  & grid based   \\
-  \hline
-\end{tabular}
-\caption{Environmental Variable Data Source}
-\end{table}
+{\footnotesize
+\begin{longtable}{lllp{4cm}p{4cm}}
+\caption{Features in the study}\\
+\label{tab:feature}
+Category & Variable Name & Type & Note & source \\ \hline \hline \endhead\\
+environment   & Clearsky DHI               & Q    & Modeled solar radiation on a horizontal surface received from the sky excluding the solar disk. - This is assuming clear sky condition & NRSDB                                                                   \\
+              & Clearsky DNI               & Q    & Modeled solar radiation obtained from the direction of the sun. - This is assuming clear sky condition                                 & NRSDB                                                                   \\
+              & Clearsky GHI               & Q    & Modeled solar radiation on a horizontal surface received from the sky. - This is assuming clear sky condition                          & NRSDB                                                                   \\
+              & Cloud Type                 & C    & Obtained from PATMOS-X                                                                                                                   & NRSDB                                                                   \\
+              & Dew Point                  & Q    & Calculated from specific humidity                                                                                                        & NRSDB                                                                   \\
+              & DHI                        & Q    & Modeled solar radiation on a horizontal surface received from the sky excluding the solar disk.                                          & NRSDB                                                                   \\
+              & DNI                        & Q    & Modeled solar radiation obtained from the direction of the sun.                                                                          & NRSDB                                                                   \\
+              & GHI                        & Q    & Modeled solar radiation on a horizontal surface received from the sky.                                                                   & NRSDB                                                                   \\
+              & Snow Depth                 & Q    & Source: MERRA                                                                                                                            & NRSDB                                                                   \\
+              & Solar Zenith Angle         & Q    & Angle between the sun and the zenith                                                                                                     & NRSDB                                                                   \\
+              & Temperature                & Q    & Source: MERRA                                                                                                                            & NRSDB                                                                   \\
+              & Pressure                   & Q    & Source: MERRA                                                                                                                            & NRSDB                                                                   \\
+              & Relative Humidity          & Q    & Calculated from specific humidity                                                                                                        & NRSDB                                                                   \\
+              & Precipitable Water         & Q    & Source: MERRA                                                                                                                            & NRSDB                                                                   \\
+              & Wind Direction             & Q    & Source: MERRA                                                                                                                            & NRSDB                                                                   \\
+              & Wind Speed                 & Q    & Source: MERRA                                                                                                                            & NRSDB                                                                   \\
+              \hline
+building      & Region                     & I    & GSA Region                                                                                                                               &                                                                         \\
+              & Age                        & Q    & computed from Year\_Built                                                                                                                &                                                                         \\
+              & Gross\_Square\_Feet\_(GSF) & Q    &                                                                                                                                          &                                                                         \\
+              & Owned                      & I    &  whether a building is owned or leased                                                                                       &                                                                         \\
+              & in\_facility               & I    &  if it is part of a large facility                                                                                           &                                                                         \\
+              & use\_Electric\_EUAS        & I    &  whether a building uses electric                                                            &                                                                         \\
+              & use\_Steam\_EUAS           & I    &  whether a building uses Steam&                                                                         \\
+              & use\_Gas\_EUAS             & I    &  whether a building uses gas&                                                                         \\
+              & use\_Oil\_EUAS             & I    &  whether a building uses oil&                                                                         \\
+              \hline
+time          & spring                     & I    & within Mar. 20 to Jun. 20                                                                                                                &                                                                         \\
+              & summer                     & I    & within Jun. 20 to Sep. 22                                                                                                                &                                                                         \\
+              & fall                       & I    & within Sep. 22 to Dec. 21                                                                                                                &                                                                         \\
+              & winter                     & I    & within Dec. 21 to Mar. 20                                                                                                                &                                                                         \\
+              & Day of week & C    & &\\
+              & holiday                    & I    & is holiday \textgreater= 50\% people take day off                                                                                        & \url{https://en.wikipedia.org/wiki/Public\_holidays\_in\_the\_United\_States}\\
+              \hline
+\end{longtable}}
 \FloatBarrier
-\framebox{TODO: check NLDAS stage 2 forcing data so that all data are grid based}
+\section{Data sources}
+% \begin{table}[h!]
+% \centering
+% \label{tab:data_source}
+% \begin{tabular}{l|l|l}
+%   \hline
+% variable                         & source & type          \\
+%   \hline
+%   \hline
+% air temperature                  & NOAA ISD  & station based \\
+% wind speed                       & NOAA ISD  & station based \\
+% wind direction                   & NOAA ISD  & station based \\
+% wind type (normal/calm/variable) & NOAA ISD  & station based \\
+% visibility distance              & NOAA ISD  & station based \\
+% dew point temperature            & NOAA ISD  & station based \\
+% sea level pressure               & NOAA ISD  & station based \\
+% global horizontal                & NSRDB  & grid based    \\
+% direct normal                    & NSRDB  & grid based    \\
+% diffuse horizontal irradiance    & NSRDB  & grid based    \\
+% Solar Zenith Angle               & NSRDB  & grid based   \\
+%   \hline
+% \end{tabular}
+% \caption{Environmental Variable Data Source}
+% \end{table}
+% \FloatBarrier
 \subsection{Building metadata source}
-The buildings in the analysis are from the GSA portfolio.
-
 \subsubsection{Building list}
-\begin{longtable}{llll}
+The buildings in the analysis are from the GSA portfolio.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/study_set_loc.png}
+  \caption{building locations}
+  \label{fig:building_loc}
+\end{figure}
+\url{http://128.2.109.159:8080/GSA/interval/mapped.html}
+
+The table \tref{tab:building_list} contains the names and location of the building in the study. More detailed descriptions of the buildings could be found in \url{https://www.gsa.gov/portal/category/22227} under each region and facility, but seems only less than 10\% of the building has such detailed information (e.g. \href{https://www.gsa.gov/portal/mediaId/122150/fileName/McCormack_more.action}{JOHN W. MCCORMACK BUILDING}), most of them is just a contact phone number.
+% \begin{longtable}{p{3cm}p{5cm}p{2cm}p{1cm}p{1cm}}
+{\footnotesize
+\begin{longtable}{lllll}
 \caption{List of buildings in the study}\\
 \label{tab:building_list}
-Building\_Number & Building\_Name                  & City           & State \\ \hline \hline \endhead
-MA0131ZZ         & JFK FEDERAL BUILDING            & BOSTON         & MA    \\
-NY0281ZZ         & JAMES M HANLEY FB               & SYRACUSE       & NY    \\
-NY0304ZZ         & KENNETH B KEATING FB            & ROCHESTER      & NY    \\
-NY0300ZZ         & LEO W OBRIEN FB                 & ALBANY         & NY    \\
-FL0067ZZ         & CHAS. E. BENNETT FB             & JACKSONVILLE   & FL    \\
-TN0088ZZ         & CLIFFORD DAVIS-ODELL HORTON     & MEMPHIS        & TN    \\
-MS0083ZZ         & DR. A. H. MC COY FB             & JACKSON        & MS    \\
-AL0076AB         & FEDERAL BUILDING                & MOBILE         & AL    \\
-GA0010AE         & IRS ANNEX                       & CHAMBLEE       & GA    \\
-NC0002AE         & VEACH-BALEY FEDERAL COMPLEX     & ASHEVILLE      & NC    \\
-AL0039AB         & JOHN A CAMPBELL USCT            & MOBILE         & AL    \\
-FL0010ZZ         & WILKIE D. FERGUSON, JR.         & MIAMI          & FL    \\
-GA1007ZZ         & SAM NUNN ATLANTA FED. CTR.      & ATLANTA        & GA    \\
-IN0048ZZ         & BIRCH BAYH FED BLDG \& US CTHSE & INDIANAPOLIS   & IN    \\
-IL0032ZZ         & CUSTOMHOUSE                     & CHICAGO        & IL    \\
-IL0205ZZ         & EVERETT M. DIRKSEN              & CHICAGO        & IL    \\
-IL0236FC         & JOHN C. KLUCZYNSKI FED. BLDG.   & CHICAGO        & IL    \\
-OH0194ZZ         & JOHN F SEIBERLING FB \& US CTHS & AKRON          & OH    \\
-OH0189CN         & JOHN WELD PECK                  & CINCINNATI     & OH    \\
-OH0046ZZ         & KINNEARY US CTHSE               & COLUMBUS       & OH    \\
-IN1703ZZ         & MAJOR GENERAL EMMETT J. BEAN    & INDIANAPOLIS   & IN    \\
-IL0303ZZ         & METCALFE BUILDING               & CHICAGO        & IL    \\
-OH0033ZZ         & METZENBAUM U.S. COURTHOUSE      & CLEVELAND      & OH    \\
-IN0133ZZ         & MINTON-CAPEHART F/B             & INDIANAPOLIS   & IN    \\
-OH0028CN         & POTTER STEWART U.S. COURTHOUSE  & CINCINNATI     & OH    \\
-MI0029ZZ         & THEODORE LEVIN US COURTHOUSE    & DETROIT        & MI    \\
-IL0235FC         & USPO LOOP STATION               & CHICAGO        & IL    \\
-MN0087ZZ         & W E BURGER FB \& US CTHS        & SAINT PAUL     & MN    \\
-KS0094ZZ         & ROBERT J. DOLE US CTHSE         & KANSAS CITY    & KS    \\
-IA0121ZZ         & CEDAR RAPIDS COURTHOUSE         & CEDAR RAPIDS   & IA    \\
-MO0050ZZ         & CHARLES EVANS WHITTAKER CTHS    & KANSAS CITY    & MO    \\
-NE0051ZZ         & EDWARD ZORINSKY FED BLDG        & OMAHA          & NE    \\
-NE0036ZZ         & HRUSKA US COURTHOUSE            & OMAHA          & NE    \\
-IA0112ZZ         & NEAL SMITH FEDERAL BUILDING     & DES MOINES     & IA    \\
-NE0531ZZ         & ROBERT DENNEY FB\&CT            & LINCOLN        & NE    \\
-MO0106ZZ         & ROBT A YOUNG FED BLD            & SAINT LOUIS    & MO    \\
-MO0095ZZ         & THOMAS F. EAGLETON COURTHOUSE   & SAINT LOUIS    & MO    \\
-TX0211ZZ         & B CASEY COURTHOUSE              & HOUSTON        & TX    \\
-NM0030ZZ         & D CHAVEZ FEDERAL BLDG           & ALBUQUERQUE    & NM    \\
-LA0085ZZ         & H BOGGS FED BLDG/COURTHOUSE     & NEW ORLEANS    & LA    \\
-AR0030RK         & LITTLE ROCK USPO/COURTHOUSE     & LITTLE ROCK    & AR    \\
-OK0046CT         & OKC POST OFFICE/COURTHOUSE      & OKLAHOMA CITY  & OK    \\
-OK0101ZZ         & OKLAHOMA CITY FEDERAL BUILDING  & OKLAHOMA CITY  & OK    \\
-NM0050ZZ         & PETE DOMENICI COURTHOUSE        & ALBUQUERQUE    & NM    \\
-TX0501HS         & SAN ANTONIO FEDERAL BLDG WEST   & SAN ANTONIO    & TX    \\
-TX0057ZZ         & TERMINAL ANNEX FEDERAL BLDG     & DALLAS         & TX    \\
-TX0302ZZ         & THE CENTRE PHASE 5              & FARMERS BRANCH & TX    \\
-CO0061ZZ         & ALFRED A. ARRAJ                 & DENVER         & CO    \\
-CO0009ZZ         & BYRON WHITE US CRTHS            & DENVER         & CO    \\
-ND0006ZZ         & FB-CT                           & FARGO          & ND    \\
-ND0046ZZ         & FB-PO                           & FARGO          & ND    \\
-UT0017ZZ         & FRANK E MOSS COURTHOUSE         & SALT LAKE CITY & UT    \\
-WY0029ZZ         & JOSEPH C O'MAHONEY FED CENTER   & CHEYENNE       & WY    \\
-UT0032ZZ         & WALLACE F BENNETT FB            & SALT LAKE CITY & UT    \\
-CA0167ZZ         & EDWARD J. SCHWARTZ FOB \& CTHS  & SAN DIEGO      & CA    \\
-CA0096DD         & JAMES R. BROWNING U.S. CRTHSE   & SAN FRANCISCO  & CA    \\
-NV0304ZZ         & LLOYD D. GEORGE COURTHOUSE      & LAS VEGAS      & NV    \\
-CA0154ZZ         & PHILLIP BURTON,FB CT            & SAN FRANCISCO  & CA    \\
-CA0306ZZ         & ROBERT T MATSUI US COURTHOUSE   & SACRAMENTO     & CA    \\
-AZ0303ZZ         & SANDRA D. O'CONNOR COURTHOUSE   & PHOENIX        & AZ    \\
-OR0033PE         & 911 FEDERAL BLDG                & PORTLAND       & OR    \\
-OR0052ZZ         & MARK O. HATFIELD U.S. CRTHSE    & PORTLAND       & OR    \\
-DC0021ZZ         & GSA                             & WASHINGTON     & DC    \\
-DC0083ZZ         & ORVILLE WRIGHT                  & WASHINGTON     & DC    \\
-DC0084ZZ         & WILBUR WRIGHT                   & WASHINGTON     & DC    \\
-MA0013ZZ         & JOHN W. MCCORMACK BUILDING      & BOSTON         & MA   \\
+Building\_Number& Building\_Name&City&State&Region\\ \hline \hline \endhead
+MA0131ZZ         & JFK FEDERAL BUILDING            & BOSTON         & MA    & 1      \\
+MA0013ZZ         & JOHN W. MCCORMACK BUILDING      & BOSTON         & MA    & 1     \\
+NY0281ZZ         & JAMES M HANLEY FB               & SYRACUSE       & NY    & 2      \\
+NY0304ZZ         & KENNETH B KEATING FB            & ROCHESTER      & NY    & 2      \\
+NY0300ZZ         & LEO W OBRIEN FB                 & ALBANY         & NY    & 2      \\
+FL0067ZZ         & CHAS. E. BENNETT FB             & JACKSONVILLE   & FL    & 4      \\
+TN0088ZZ         & CLIFFORD DAVIS-ODELL HORTON     & MEMPHIS        & TN    & 4      \\
+MS0083ZZ         & DR. A. H. MC COY FB             & JACKSON        & MS    & 4      \\
+AL0076AB         & FEDERAL BUILDING                & MOBILE         & AL    & 4      \\
+GA0010AE         & IRS ANNEX                       & CHAMBLEE       & GA    & 4      \\
+NC0002AE         & VEACH-BALEY FEDERAL COMPLEX     & ASHEVILLE      & NC    & 4      \\
+AL0039AB         & JOHN A CAMPBELL USCT            & MOBILE         & AL    & 4      \\
+FL0010ZZ         & WILKIE D. FERGUSON, JR.         & MIAMI          & FL    & 4      \\
+GA1007ZZ         & SAM NUNN ATLANTA FED. CTR.      & ATLANTA        & GA    & 4      \\
+IN0048ZZ         & BIRCH BAYH FED BLDG \& US CTHSE & INDIANAPOLIS   & IN    & 5      \\
+IL0032ZZ         & CUSTOMHOUSE                     & CHICAGO        & IL    & 5      \\
+IL0205ZZ         & EVERETT M. DIRKSEN              & CHICAGO        & IL    & 5      \\
+IL0236FC         & JOHN C. KLUCZYNSKI FED. BLDG.   & CHICAGO        & IL    & 5      \\
+OH0194ZZ         & JOHN F SEIBERLING FB \& US CTHS & AKRON          & OH    & 5      \\
+OH0189CN         & JOHN WELD PECK                  & CINCINNATI     & OH    & 5      \\
+OH0046ZZ         & KINNEARY US CTHSE               & COLUMBUS       & OH    & 5      \\
+IN1703ZZ         & MAJOR GENERAL EMMETT J. BEAN    & INDIANAPOLIS   & IN    & 5      \\
+IL0303ZZ         & METCALFE BUILDING               & CHICAGO        & IL    & 5      \\
+OH0033ZZ         & METZENBAUM U.S. COURTHOUSE      & CLEVELAND      & OH    & 5      \\
+IN0133ZZ         & MINTON-CAPEHART F/B             & INDIANAPOLIS   & IN    & 5      \\
+OH0028CN         & POTTER STEWART U.S. COURTHOUSE  & CINCINNATI     & OH    & 5      \\
+MI0029ZZ         & THEODORE LEVIN US COURTHOUSE    & DETROIT        & MI    & 5      \\
+IL0235FC         & USPO LOOP STATION               & CHICAGO        & IL    & 5      \\
+MN0087ZZ         & W E BURGER FB \& US CTHS        & SAINT PAUL     & MN    & 5      \\
+KS0094ZZ         & ROBERT J. DOLE US CTHSE         & KANSAS CITY    & KS    & 6      \\
+IA0121ZZ         & CEDAR RAPIDS COURTHOUSE         & CEDAR RAPIDS   & IA    & 6      \\
+MO0050ZZ         & CHARLES EVANS WHITTAKER CTHS    & KANSAS CITY    & MO    & 6      \\
+NE0051ZZ         & EDWARD ZORINSKY FED BLDG        & OMAHA          & NE    & 6      \\
+NE0036ZZ         & HRUSKA US COURTHOUSE            & OMAHA          & NE    & 6      \\
+IA0112ZZ         & NEAL SMITH FEDERAL BUILDING     & DES MOINES     & IA    & 6      \\
+NE0531ZZ         & ROBERT DENNEY FB\&CT            & LINCOLN        & NE    & 6      \\
+MO0106ZZ         & ROBT A YOUNG FED BLD            & SAINT LOUIS    & MO    & 6      \\
+MO0095ZZ         & THOMAS F. EAGLETON COURTHOUSE   & SAINT LOUIS    & MO    & 6      \\
+TX0211ZZ         & B CASEY COURTHOUSE              & HOUSTON        & TX    & 7      \\
+NM0030ZZ         & D CHAVEZ FEDERAL BLDG           & ALBUQUERQUE    & NM    & 7      \\
+LA0085ZZ         & H BOGGS FED BLDG/COURTHOUSE     & NEW ORLEANS    & LA    & 7      \\
+AR0030RK         & LITTLE ROCK USPO/COURTHOUSE     & LITTLE ROCK    & AR    & 7      \\
+OK0046CT         & OKC POST OFFICE/COURTHOUSE      & OKLAHOMA CITY  & OK    & 7      \\
+OK0101ZZ         & OKLAHOMA CITY FEDERAL BUILDING  & OKLAHOMA CITY  & OK    & 7      \\
+NM0050ZZ         & PETE DOMENICI COURTHOUSE        & ALBUQUERQUE    & NM    & 7      \\
+TX0501HS         & SAN ANTONIO FEDERAL BLDG WEST   & SAN ANTONIO    & TX    & 7      \\
+TX0057ZZ         & TERMINAL ANNEX FEDERAL BLDG     & DALLAS         & TX    & 7      \\
+TX0302ZZ         & THE CENTRE PHASE 5              & FARMERS BRANCH & TX    & 7      \\
+CO0061ZZ         & ALFRED A. ARRAJ                 & DENVER         & CO    & 8      \\
+CO0009ZZ         & BYRON WHITE US CRTHS            & DENVER         & CO    & 8      \\
+ND0006ZZ         & FB-CT                           & FARGO          & ND    & 8      \\
+ND0046ZZ         & FB-PO                           & FARGO          & ND    & 8      \\
+UT0017ZZ         & FRANK E MOSS COURTHOUSE         & SALT LAKE CITY & UT    & 8      \\
+WY0029ZZ         & JOSEPH C O'MAHONEY FED CENTER   & CHEYENNE       & WY    & 8      \\
+UT0032ZZ         & WALLACE F BENNETT FB            & SALT LAKE CITY & UT    & 8      \\
+CA0167ZZ         & EDWARD J. SCHWARTZ FOB \& CTHS  & SAN DIEGO      & CA    & 9      \\
+CA0096DD         & JAMES R. BROWNING U.S. CRTHSE   & SAN FRANCISCO  & CA    & 9      \\
+NV0304ZZ         & LLOYD D. GEORGE COURTHOUSE      & LAS VEGAS      & NV    & 9      \\
+CA0154ZZ         & PHILLIP BURTON,FB CT            & SAN FRANCISCO  & CA    & 9      \\
+CA0306ZZ         & ROBERT T MATSUI US COURTHOUSE   & SACRAMENTO     & CA    & 9      \\
+AZ0303ZZ         & SANDRA D. O'CONNOR COURTHOUSE   & PHOENIX        & AZ    & 9      \\
+OR0033PE         & 911 FEDERAL BLDG                & PORTLAND       & OR    & 10     \\
+OR0052ZZ         & MARK O. HATFIELD U.S. CRTHSE    & PORTLAND       & OR    & 10     \\
+DC0021ZZ         & GSA                             & WASHINGTON     & DC    & 11     \\
+DC0083ZZ         & ORVILLE WRIGHT                  & WASHINGTON     & DC    & 11     \\
+DC0084ZZ         & WILBUR WRIGHT                   & WASHINGTON     & DC    & 11     \\
 \hline
-\end{longtable}
+\end{longtable}}
 \FloatBarrier
 
 \subsubsection{Basic information}
+\begin{figure}[h!]
+  \centering
+  \includegraphics{images/dist_year_built.png}
+  \caption{Distribution of built year}
+  \label{fig:dist_year_built}
+\end{figure}
+\FloatBarrier
+\begin{figure}[h!]
+  \centering
+  \includegraphics{images/dist_gsf.png}
+  \caption{Distribution of gross square feet}
+  \label{fig:dist_gsf}
+\end{figure}
+\FloatBarrier
 \begin{longtable}{lllllll}
 \caption{Basic information of buildings in the study}\\
 \label{tab:basic_info}
 Building\_Number & Region & Year\_Built & Gross\_Square\_Feet & Owned & in\_facility & Type \\ \hline \hline \endhead
 MA0131ZZ         & 1      & 1966        & 1045836                    & 1     & 1            & Office                           \\
+MA0013ZZ         & 1      & 1933        & 793165                     & 1     & 1            & Office                          \\
 NY0281ZZ         & 2      & 1979        & 391031                     & 1     & 1            & Courthouse                       \\
 NY0304ZZ         & 2      & 1974        & 256230                     & 1     & 1            & Courthouse                       \\
 NY0300ZZ         & 2      & 1975        & 256954                     & 1     & 1            & Office                           \\
@@ -322,7 +387,6 @@ OR0052ZZ         & 10     & 1997        & 591688                     & 1     & 1
 DC0021ZZ         & 11     & 1917        & 755935                     & 1     & 1            & Office                           \\
 DC0083ZZ         & 11     & 1963        & 1114225                    & 1     & 1            & Office                           \\
 DC0084ZZ         & 11     & 1964        & 421317                     & 1     & 1            & Office                           \\
-MA0013ZZ         & 1      & 1933        & 793165                     & 1     & 1            & Office                          \\
 \hline
 \end{longtable}
 \FloatBarrier
@@ -335,8 +399,7 @@ MA0013ZZ         & 1      & 1933        & 793165                     & 1     & 1
 \end{figure}
 \FloatBarrier
 \url{https://www.gsa.gov/portal/category/22227}
-
-\subsubsection{Data Availability}
+\subsubsection{Energy data availability}
 \begin{longtable}{lll}
 \caption{Energy data availability for buildings in the study}\\
 \label{tab:energy_avail}
@@ -412,7 +475,132 @@ total            & 65            & 34       \\
 \hline
 \end{longtable}
 \FloatBarrier
+
+\subsubsection{Building energy record period}
+\begin{longtable}{lll}
+\caption{Energy recording period}\\
+\label{tab:wretro}
+Building\_Number & energy\_start        & energy\_stop         \\ \hline \hline \endhead
+AL0039AB         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+AL0076AB         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+AR0030RK         & 2013-Sep-09 22:15:00 & 2016-Jun-30 10:45:00 \\
+AZ0303ZZ         & 2013-Oct-24 13:15:00 & 2016-Jun-30 6:15:00  \\
+CA0096DD         & 2013-Sep-09 20:15:00 & 2014-Oct-30 11:45:00 \\
+CA0154ZZ         & 2014-Apr-07 7:15:00  & 2016-Jun-30 6:15:00  \\
+CA0167ZZ         & 2013-Sep-09 20:15:00 & 2016-Jun-17 22:30:00 \\
+CA0306ZZ         & 2013-Oct-29 8:00:00  & 2016-Jun-30 6:15:00  \\
+CO0009ZZ         & 2013-Sep-09 21:15:00 & 2016-Jun-30 7:45:00  \\
+CO0061ZZ         & 2013-Sep-09 21:15:00 & 2016-Jun-30 7:45:00  \\
+DC0021ZZ         & 2015-Feb-19 12:15:00 & 2016-Jun-30 9:30:00  \\
+DC0083ZZ         & 2013-Sep-09 23:30:00 & 2016-Jun-30 9:30:00  \\
+DC0084ZZ         & 2013-Sep-09 23:30:00 & 2016-Jun-30 9:30:00  \\
+FL0010ZZ         & 2013-Dec-18 14:45:00 & 2016-Jun-27          \\
+FL0067ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+GA0010AE         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+GA1007ZZ         & 2013-Sep-09 23:15:00 & 2014-Oct-28 9:45:00  \\
+IA0112ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+IA0121ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+IL0032ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+IL0205ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+IL0235FC         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+IL0236FC         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+IL0303ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+IN0048ZZ         & 2013-Sep-09 23:30:00 & 2016-Jun-27          \\
+IN0133ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+IN1703ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+KS0094ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+LA0085ZZ         & 2013-Apr-20 21:30:00 & 2016-Jun-30 11:00:00 \\
+MA0131ZZ         & 2013-Sep-09 23:30:00 & 2016-Jun-27          \\
+MI0029ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+MN0087ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+MO0050ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+MO0095ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+MO0106ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+MS0083ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+NC0002AE         & 2013-Dec-20 12:45:00 & 2016-Jun-27          \\
+ND0006ZZ         & 2013-Sep-09 21:15:00 & 2016-Jun-30 7:45:00  \\
+ND0046ZZ         & 2013-Sep-09 21:15:00 & 2016-Jun-30 7:45:00  \\
+NE0036ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+NE0051ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+NE0531ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-27          \\
+NM0030ZZ         & 2011-Sep-16 5:15:00  & 2016-Jun-25 13:15:00 \\
+NM0050ZZ         & 2011-Oct-11 18:30:00 & 2016-Jun-30 11:00:00 \\
+NV0304ZZ         & 2013-Sep-09 20:15:00 & 2016-Jun-30 6:15:00  \\
+NY0281ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+NY0300ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+NY0304ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+OH0028CN         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+OH0033ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+OH0046ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+OH0189CN         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+OH0194ZZ         & 2013-Sep-09 23:15:00 & 2016-Jun-27          \\
+OK0046CT         & 2012-Apr-06 6:30:00  & 2016-Jun-30 10:45:00 \\
+OK0101ZZ         & 2012-Apr-05 17:45:00 & 2016-Jun-30 3:00:00  \\
+OR0033PE         & 2013-Sep-09 20:15:00 & 2016-Jun-30 6:15:00  \\
+OR0052ZZ         & 2013-Sep-09 20:15:00 & 2016-Jun-28 6:00:00  \\
+TN0088ZZ         & 2013-Sep-09 22:15:00 & 2015-Mar-07 14:45:00 \\
+TX0057ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-30 10:45:00 \\
+TX0211ZZ         & 2013-Sep-09 22:30:00 & 2016-Jun-30 10:30:00 \\
+TX0302ZZ         & 2013-Sep-09 22:15:00 & 2016-Jun-30 10:45:00 \\
+TX0501HS         & 2013-Sep-09 22:15:00 & 2016-Jun-30 10:30:00 \\
+UT0017ZZ         & 2013-Sep-09 21:15:00 & 2016-Jun-30 7:45:00  \\
+UT0032ZZ         & 2013-Sep-09 21:30:00 & 2016-Jun-30 7:45:00  \\
+WY0029ZZ         & 2013-Sep-09 21:15:00 & 2016-Jun-30 7:45:00 \\
+\hline
+\end{longtable}
+\subsubsection{Building retrofit}
+There are 4 buildings with retrofit in the energy recording period.
+\begin{longtable}{lp{4cm}p{4cm}p{3cm}}
+\caption{retrofit during the energy recording period}\\
+\label{tab:wretro}
+Building\_Number & high\_level\_ECM & detail\_level\_ECM & Substantial\_Completion\_Date \\ \hline \hline
+\endhead
+FL0067ZZ         & Advanced Metering                       & Building / Facility                       & 2013-Nov-19           \\
+MS0083ZZ         & Advanced Metering                       & Building / Facility                       & 2014-Jun-13           \\
+MS0083ZZ         & Building Envelope                       & New\_Facade                               & 2014-Jun-13           \\
+MS0083ZZ         & Building Envelope                       & New\_Roof                                 & 2014-Jun-13           \\
+MS0083ZZ         & Building Envelope                       & New\_Windows                              & 2014-Jun-13           \\
+MS0083ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2014-Jun-13           \\
+MS0083ZZ         & HVAC                                    & New\_Air Handler                          & 2014-Jun-13           \\
+MS0083ZZ         & HVAC                                    & New\_Boilers                              & 2014-Jun-13           \\
+MS0083ZZ         & HVAC                                    & New\_Chillers                             & 2014-Jun-13           \\
+MS0083ZZ         & HVAC                                    & New\_Controls                             & 2014-Jun-13           \\
+MS0083ZZ         & HVAC                                    & New\_Cooling Tower                        & 2014-Jun-13           \\
+MS0083ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2014-Jun-13           \\
+MS0083ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2014-Jun-13           \\
+MS0083ZZ         & Lighting                                & Indoor Daylighting or Lighting Strategies & 2014-Jun-13           \\
+MS0083ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2014-Jun-13           \\
+MS0083ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2014-Jun-13           \\
+MS0083ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2014-Jun-13           \\
+MS0083ZZ         & Lighting                                & Outdoor\_Retrofit or Replacement          & 2014-Jun-13           \\
+NM0050ZZ         & Advanced Metering                       & Building / Facility                       & 2013-Aug-12           \\
+NM0050ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2013-Aug-12           \\
+NM0050ZZ         & HVAC                                    & Repairs\_Controls                         & 2013-Aug-12           \\
+NM0050ZZ         & HVAC                                    & Repairs\_Cooling Tower                    & 2013-Aug-12           \\
+OH0046ZZ         & Advanced Metering                       & Building / Facility                       & 2013-Dec-26           \\
+OH0046ZZ         & Building Envelope                       & Repairs\_Facade                           & 2013-Dec-26           \\
+OH0046ZZ         & Building Envelope                       & Repairs\_Windows                          & 2013-Dec-26           \\
+OH0046ZZ         & Building Tuneup or Utility Improvements & Commissioning Measures                    & 2013-Dec-26           \\
+OH0046ZZ         & HVAC                                    & New\_Air Handler                          & 2013-Dec-26           \\
+OH0046ZZ         & HVAC                                    & New\_Boilers                              & 2013-Dec-26           \\
+OH0046ZZ         & HVAC                                    & New\_Controls                             & 2013-Dec-26           \\
+OH0046ZZ         & HVAC                                    & New\_Cooling Tower                        & 2013-Dec-26           \\
+OH0046ZZ         & HVAC                                    & Repairs\_Air Handler                      & 2013-Dec-26           \\
+OH0046ZZ         & HVAC                                    & Repairs\_Boilers                          & 2013-Dec-26           \\
+OH0046ZZ         & HVAC                                    & Repairs\_Chillers                         & 2013-Dec-26           \\
+OH0046ZZ         & Lighting                                & Indoor\_Daylighting                       & 2013-Dec-26           \\
+OH0046ZZ         & Lighting                                & Indoor\_Lighting Controls                 & 2013-Dec-26           \\
+OH0046ZZ         & Lighting                                & Indoor\_Retrofit or Replacement           & 2013-Dec-26           \\
+OH0046ZZ         & Lighting                                & Outdoor\_Lighting Controls                & 2013-Dec-26          \\
+\hline
+\end{longtable}
+\FloatBarrier
+\subsubsection{Building Mechanical System}
+BAS data from sky spark.
+
+To be downloaded...
 \subsection{Environment data sources}
+\framebox{TODO: check NLDAS stage 2 forcing data so that all data are grid based}
 In the previous stage of the work, the data source for temperature,
 the only environmental variable is retrieved from the pisystem, whose
 source is \href{https://www.wunderground.com/}{weather
@@ -425,6 +613,14 @@ source is \href{https://www.wunderground.com/}{weather
     \includegraphics[width=0.8\textwidth]{images/noaa_ish.png}
     \caption{\href{https://gis.ncdc.noaa.gov/geoportal/catalog/search/resource/details.page?id=gov.noaa.ncdc:C00532}{NOAA Integrated Surface Global Hourly Data}}
     \label{fig:noaa_ish}
+  \end{figure}
+  \FloatBarrier
+\item Station distribution
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{C00532_ISH.png}
+    \caption{NOAA ISD station distribution}
+    \label{fig:noaa_station}
   \end{figure}
   \FloatBarrier
 \item download: \url{ftp://ftp.ncdc.noaa.gov/pub/data/noaa/}, or using
@@ -446,7 +642,7 @@ https://www7.ncdc.noaa.gov/rest/services/values/ish/72315003812/TMP/200101010000
   (clear, overcast, scattered, etc.), temperature, dew point,
   precipitation.
 \item time resolution: 1 to 2 observations per hour
-\item The list of weather stations to download:
+\item The list of weather stations associated of the buildings:
 \begin{verbatim}
   KNIP, KABQ, KOAK, KADS, KOKC, KAKR, KOLV, KALB, KOMA, KATL, KPDK,
   KAVL, KPDX, KBFM, KPHX, KBKF, KROC, KBKL, KSAC, KBOS, KSAN, KCID,
@@ -455,7 +651,6 @@ https://www7.ncdc.noaa.gov/rest/services/values/ish/72315003812/TMP/200101010000
   KMKC, KNEW
 \end{verbatim}
 \end{itemize}
-downloaded 2013 to 2016 data
 \subsubsection{\href{http://rredc.nrel.gov/solar/old_data/nsrdb/}{National Solar Radiation Data Base (NSRDB)}}
 ``The NSRDB is a serially complete collection of hourly and
 half-hourly values of the three most common measurements of solar
@@ -515,21 +710,12 @@ Download and data specs: \url{https://disc.sci.gsfc.nasa.gov/uui/datasets?keywor
   \label{fig:nldas}
 \end{figure}
 download page: \url{https://disc.sci.gsfc.nasa.gov/uui/datasets/NLDAS_FORB0125_H_V002/summary?keywords=NLDAS}
-\subsection{Building Mechanical System}
-BAS data from sky spark.
-
-To be downloaded...
-\subsection{Energy data}
-Interval meter data from ION.
-
-Might need to download more buildings
 \section{Non-linear models}
-\begin{itemize}
-\item Neuron Network with 1-2 hidden layer
-\item Support Vector Regression with RBF kernel
-\item Random forest regression~\cite{randomForestWiki2016}
-\item piecewise linear regression as baseline (it's a simple non-linear model, but not expressive enough)
-\end{itemize}
+\subsection{Neuron Network with 1-2 hidden layer}
+\subsubsection{Introduction}
+\subsection{Support Vector Regression with RBF kernel}
+\subsection{Random forest regression~\cite{randomForestWiki2016}}
+\subsection{piecewise linear regression as baseline (it's a simple non-linear model, but not expressive enough)}
 \section{Appendix}
 \subsection{Building ECM actions}
 \begin{longtable}{lp{4cm}p{4cm}p{3cm}}
